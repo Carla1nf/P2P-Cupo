@@ -80,11 +80,7 @@ contract P2PContract {
         );
         delete OfferData_PER_ID[_id];
         IERC20 cupon_TOKEN = IERC20(_offerData.cupon_Address);
-        cupon_TOKEN.transferFrom(
-            address(this),
-            msg.sender,
-            _offerData.cupon_Amount
-        );
+        cupon_TOKEN.transfer( msg.sender, _offerData.cupon_Amount);
         emit OfferAccepted(_id, _offerData.cupon_Address);
     }
 
