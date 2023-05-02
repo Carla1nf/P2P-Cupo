@@ -4,7 +4,8 @@
     "@openzeppelin/contracts": "^4.8.3",
     "@openzeppelin/test-helpers": "^0.5.16",
     "chai": "^4.3.7",
-    "chai-as-promised": "^7.1.1"
+    "chai-as-promised": "^7.1.1",
+    "keccak256": "^1.0.6"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",

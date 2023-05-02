@@ -38,7 +38,6 @@ describe("P2PContract", function () {
     await p2pContract.whiteListTokens(cuponContract.address, true);
 
     const balanceUser = await cuponContract.balanceOf(owner.address);
-    const balanceBefore = await cuponContract.balanceOf(p2pContract.address);
 
     await p2pContract.createOffer(
       cuponContract.address,
@@ -48,8 +47,7 @@ describe("P2PContract", function () {
     );
 
     const balance_AfterUser = await cuponContract.balanceOf(owner.address);
-    const balanceAfter = await cuponContract.balanceOf(p2pContract.address);
-
+  
    await expect(
     p2pContract
       .connect(addr1).createOffer(
@@ -96,7 +94,7 @@ describe("P2PContract", function () {
     ).to.equal(1);  
 
     }),
-    it("Accept Collateral", async () => {
+    it("Accept Offers", async () => {
         const [owner, addr1, addr2] = await ethers.getSigners();
         await p2pContract.whiteListTokens(cuponContract.address, true);
         await Payment_ERC20.connect(addr1).mint(TOKENS_MINTED);

@@ -1,8 +1,9 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
+import "./new_Token.sol";
 contract P2PContract {
+
     event OfferCreated(uint deadLine, uint Id, address cupon_Add);
     event OfferDeleted(uint Id, address cupon_Add, address owner);
     event OfferAccepted(uint Id, address cupon_Add);
@@ -20,8 +21,8 @@ contract P2PContract {
         uint deadLine;
     }
 
-    modifier onlyOwner() {
-        if (msg.sender != owner) {
+    modifier onlyAllowed() {
+        if (msg.sender != owner && msg.sender != generatorContract) {
             revert();
         }
         _;
@@ -29,6 +30,7 @@ contract P2PContract {
 
     uint public s_ID;
     address owner;
+    address generatorContract;
     mapping(uint => OfferStruct) public OfferData_PER_ID;
     mapping(address => bool) isTokenAllowed;
 
@@ -41,19 +43,20 @@ contract P2PContract {
         if (!isTokenAllowed[cupon_Add]) {
             revert();
         }
-        IERC20 cuponToken = IERC20(cupon_Add);
+        CuponF cuponToken = CuponF(cupon_Add);
         cuponToken.transferFrom(msg.sender, address(this), cuponAmount);
         s_ID++;
+        uint _deadLine = cuponToken.s_Deadline();
         OfferStruct memory _offerData = OfferStruct({
             offer_OWNER: msg.sender,
             cupon_Address: cupon_Add,
             priceToken_Address: priceToken_Add,
             cupon_Amount: cuponAmount,
             priceToken_Amount: price,
-            deadLine: block.timestamp + 2 days // Placeholder Deadline
+            deadLine: _deadLine // Placeholder Deadline
         });
         OfferData_PER_ID[s_ID] = _offerData;
-        emit OfferCreated(block.timestamp + 2 days, s_ID, cupon_Add);
+        emit OfferCreated(_deadLine, s_ID, cupon_Add);
     }
 
     function cancelOffer(uint _id) external {
@@ -87,7 +90,13 @@ contract P2PContract {
     function whiteListTokens(
         address tokenWhiteList,
         bool status
-    ) external onlyOwner {
+    ) external onlyAllowed {
         isTokenAllowed[tokenWhiteList] = status;
+    }
+
+    function setGeneratorContract(
+      address newGenerator
+    ) external onlyAllowed {
+        generatorContract = newGenerator;
     }
 }
